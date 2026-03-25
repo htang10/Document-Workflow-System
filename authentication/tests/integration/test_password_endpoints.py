@@ -70,13 +70,13 @@ class SignUpTestCase(APITestCase):
         self.assertTrue(User.objects.filter(email=self.email).exists())
 
 
-class SignInTestCase(APITestCase):
-    """Test password-based sign-in functionality"""
+class LoginTestCase(APITestCase):
+    """Test password-based login functionality"""
 
     def setUp(self):
         self.email = "existing_user@gmail.com"
         self.password = "existinguser123"
-        self.url = reverse("sign-in")
+        self.url = reverse("login")
 
         # Assume an existing user
         User.objects.create(email=self.email, password=self.password)
@@ -134,7 +134,7 @@ class SignInTestCase(APITestCase):
         # But should still authenticate
         self.assertTrue(user.check_password(self.password))
 
-    def test_sign_in(self):
+    def test_login(self):
         """Test with valid data"""
         # Email should be case-insensitive
         cases = [self.email.lower(), self.email.upper(), self.email.capitalize()]
@@ -150,7 +150,7 @@ class SignInTestCase(APITestCase):
             self.assertEqual(response.data["user"]["email"], self.email)
             self.assertIsNotNone(response.data["user"]["display_name"])
 
-    def test_sign_in_updates_login_metadata(self):
+    def test_login_updates_login_metadata(self):
         """Test that login metadata is updated"""
         data = {"email": self.email, "password": self.password}
         response = self.client.post(self.url, data, format="json")

@@ -41,9 +41,9 @@ class SignUpSerializer(serializers.ModelSerializer):
         return user
 
 
-class SignInSerializer(serializers.Serializer):
+class LoginSerializer(serializers.Serializer):
     """
-    Serializer for signing in.
+    Serializer for login.
 
     Handles email and password validation, and authentication.
     """

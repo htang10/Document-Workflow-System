@@ -6,7 +6,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from .serializers import (
     SignUpSerializer,
-    SignInSerializer,
+    LoginSerializer,
 )
 from .utils import update_user_login_metadata
 
@@ -17,9 +17,9 @@ class SignUpEndpoint(CreateAPIView):
     permission_classes = [AllowAny]
 
 
-class SignInEndpoint(GenericAPIView):
-    """Password-based sign-in endpoint"""
-    serializer_class = SignInSerializer
+class LoginEndpoint(GenericAPIView):
+    """Password-based login endpoint"""
+    serializer_class = LoginSerializer
     permission_classes = [AllowAny]
 
     def post(self, request):

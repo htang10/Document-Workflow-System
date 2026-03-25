@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from authentication.serializers import SignUpSerializer, SignInSerializer
+from authentication.serializers import SignUpSerializer, LoginSerializer
 from authentication.models import User
 
 
@@ -102,8 +102,8 @@ class SignUpSerializerTestCase(TestCase):
         self.assertNotEqual(user.display_name, "Should Be Ignored")
 
 
-class SignInSerializerTestCase(TestCase):
-    """Unit tests for SignInSerializer"""
+class LoginSerializerTestCase(TestCase):
+    """Unit tests for LoginSerializer"""
 
     def setUp(self):
         self.user = User.objects.create(email="test@example.com")
@@ -116,7 +116,7 @@ class SignInSerializerTestCase(TestCase):
             "email": "test@example.com",
             "password": "validpassword123"
         }
-        serializer = SignInSerializer(data=data)
+        serializer = LoginSerializer(data=data)
         self.assertTrue(serializer.is_valid())
         self.assertEqual(serializer.validated_data["user"], self.user)
 
@@ -126,7 +126,7 @@ class SignInSerializerTestCase(TestCase):
             "email": "TEST@EXAMPLE.COM",
             "password": "validpassword123"
         }
-        serializer = SignInSerializer(data=data)
+        serializer = LoginSerializer(data=data)
         self.assertTrue(serializer.is_valid())
         self.assertEqual(serializer.validated_data["user"], self.user)
 
@@ -136,7 +136,7 @@ class SignInSerializerTestCase(TestCase):
             "email": "  test@example.com  ",
             "password": "validpassword123"
         }
-        serializer = SignInSerializer(data=data)
+        serializer = LoginSerializer(data=data)
         self.assertTrue(serializer.is_valid())
         self.assertEqual(serializer.validated_data["user"], self.user)
 
@@ -146,7 +146,7 @@ class SignInSerializerTestCase(TestCase):
             "email": "test@example.com",
             "password": "wrongpassword123"
         }
-        serializer = SignInSerializer(data=data)
+        serializer = LoginSerializer(data=data)
         self.assertFalse(serializer.is_valid())
         self.assertIn("error", serializer.errors)
 
@@ -156,21 +156,21 @@ class SignInSerializerTestCase(TestCase):
             "email": "nonexistent@example.com",
             "password": "validpassword123"
         }
-        serializer = SignInSerializer(data=data)
+        serializer = LoginSerializer(data=data)
         self.assertFalse(serializer.is_valid())
         self.assertIn("error", serializer.errors)
 
     def test_missing_email(self):
         """Test missing email raises error"""
         data = {"password": "validpassword123"}
-        serializer = SignInSerializer(data=data)
+        serializer = LoginSerializer(data=data)
         self.assertFalse(serializer.is_valid())
         self.assertIn("email", serializer.errors)
 
     def test_missing_password(self):
         """Test missing password raises error"""
         data = {"email": "test@example.com"}
-        serializer = SignInSerializer(data=data)
+        serializer = LoginSerializer(data=data)
         self.assertFalse(serializer.is_valid())
         self.assertIn("password", serializer.errors)
 
@@ -180,6 +180,6 @@ class SignInSerializerTestCase(TestCase):
             "email": "not-an-email",
             "password": "validpassword123"
         }
-        serializer = SignInSerializer(data=data)
+        serializer = LoginSerializer(data=data)
         self.assertFalse(serializer.is_valid())
         self.assertIn("email", serializer.errors)
