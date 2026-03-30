@@ -15,6 +15,7 @@ from datetime import timedelta
 from pathlib import Path
 
 from dotenv import load_dotenv
+from celery.schedules import crontab
 
 load_dotenv(verbose=True)
 
@@ -48,18 +49,6 @@ REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
 
-SPECTACULAR_SETTINGS = {
-    "TITLE": "Document Workflow System",
-    "DESCRIPTION": "",
-    "VERSION": "1.0",
-    "SERVE_INCLUDE_SCHEMA": False,
-}
-
-SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
-}
-
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -71,6 +60,7 @@ INSTALLED_APPS = [
     "authentication",
     # Third-party
     "rest_framework",
+    "rest_framework_simplejwt.token_blacklist",
     "drf_spectacular"
 ]
 
@@ -117,6 +107,37 @@ DATABASES = {
         "PORT": os.getenv("POSTGRES_PORT"),
     }
 }
+
+
+# Authentication
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+}
+
+
+# API Documentation
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Document Workflow System",
+    "DESCRIPTION": "",
+    "VERSION": "1.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+}
+
+
+# Task queue
+
+CELERY_BEAT_SCHEDULE = {
+    "flush-expired-tokens-daily": {
+        "task": "authentication.tasks.flush_expired_tokens",
+        "schedule": crontab(hour=0, minute=0),  # every midnight
+    }
+}
+
+CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL")
+
 
 # Password Hashing
 

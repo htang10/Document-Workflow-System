@@ -1,5 +1,7 @@
 from rest_framework import serializers
 from rest_framework.authentication import authenticate
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.exceptions import TokenError
 
 from .models import User
 
@@ -49,7 +51,6 @@ class LoginSerializer(serializers.Serializer):
     """
     email = serializers.EmailField(max_length=255)
     password = serializers.CharField(
-        min_length=8,
         write_only=True,
         style={"input_type": "password"}
     )
@@ -65,4 +66,17 @@ class LoginSerializer(serializers.Serializer):
 
         data["user"] = user
         return data
+
+
+class LogoutSerializer(serializers.Serializer):
+    refresh = serializers.CharField()
+
+    def validate(self, data):
+        try:
+            token = RefreshToken(data["refresh"])
+            token.blacklist()
+        except TokenError:
+            raise serializers.ValidationError("Token is invalid or already blacklisted.")
+        return data
+
 
