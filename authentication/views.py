@@ -1,12 +1,13 @@
 from rest_framework import status
 from rest_framework.generics import CreateAPIView, GenericAPIView
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from .serializers import (
     SignUpSerializer,
     LoginSerializer,
+    LogoutSerializer,
 )
 from .utils import update_user_login_metadata
 
@@ -41,3 +42,16 @@ class LoginEndpoint(GenericAPIView):
                 "display_name": user.display_name,
             }
         }, status=status.HTTP_200_OK)
+
+
+class LogoutEndpoint(GenericAPIView):
+    """Logout endpoint for all auth methods"""
+    serializer_class = LogoutSerializer
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        refresh = serializer.validated_data["refresh"]
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
