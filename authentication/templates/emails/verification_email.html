@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Verification Email</title>
+</head>
+<body style="
+margin: 0;
+padding: 0;
+font-family: Arial, Helvetica, sans-serif;
+font-size: 18px;
+">
+    <table align="center" width="500px">
+        <tr>
+            <td>
+                <table>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <h3 style="">Activate your new account</h3>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Please verify your email address below to activate the new account.</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <a 
+                                href="{{ verification_url }}"
+                                target="_blank"
+                                style="
+                                display: inline-block;
+                                margin: 30px 0;
+                                padding: 15px 40px;
+                                border-radius: 5px;
+                                font-size: 25px;
+                                background-color: #097969;
+                                color: white;
+                                box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+                                text-decoration: none;
+                                word-break: break-all;">
+                                    Verify email
+                                </a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p><b>This link expires in the next 24 hours.</b></p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>If you didn't perform this action, you can safely disregard this email.</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Button not working? Please copy and paste this following link into your browser:</p>
+                                <a href="{{ verification_url }}" target="_blank">{{ verification_url }}</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
