@@ -1,0 +1,9 @@
+Activate your new account
+
+To verify your email address, please copy and paste this following link into your browser:
+
+{{ verification_url }}
+
+This link expires in the next 24 hours.
+
+If you didn't perform this action, you can safely disregard this email.

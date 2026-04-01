@@ -19,9 +19,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_superuser = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
-    is_email_verified = models.BooleanField(default=False)
 
     # tracking metrics
+    email_verified_at = models.DateTimeField(null=True)
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Date Joined")
     updated_at = models.DateTimeField(auto_now=True, verbose_name="Last Modified At")
     last_active = models.DateTimeField(null=True)
@@ -45,7 +45,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         db_table = "users"
         ordering = ["-created_at"]
 
-    def save(self, **kwargs):
+    def save(self, *args, **kwargs):
         self.email = self.email.lower().strip()
 
         if not self.display_name:
@@ -59,3 +59,22 @@ class User(AbstractBaseUser, PermissionsMixin):
             self.is_staff = True
 
         super().save(**kwargs)
+
+
+class Token(models.Model):
+    class Purpose(models.TextChoices):
+        VERIFICATION = "verification"
+        AUTHENTICATION = "authentication"
+
+    id = models.UUIDField(default=uuid.uuid7, editable=False, primary_key=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    token = models.CharField(max_length=128) # hashed
+    purpose = models.CharField(max_length=32, choices=Purpose)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField(default="")
+    used_at = models.DateTimeField(null=True)
+
+    class Meta:
+        verbose_name = "Token"
+        db_table = "tokens"
+        ordering = ["-created_at"]

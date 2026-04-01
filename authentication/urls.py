@@ -5,6 +5,8 @@ from .views import (
     SignUpEndpoint,
     LoginEndpoint,
     LogoutEndpoint,
+    VerifyEmailEndpoint,
+    ResendVerificationEndpoint,
 )
 
 
@@ -12,5 +14,7 @@ urlpatterns = [
     path("signup/", SignUpEndpoint.as_view(), name="signup"),
     path("login/", LoginEndpoint.as_view(), name="login"),
     path("logout/", LogoutEndpoint.as_view(), name="logout"),
+    path("verify/", VerifyEmailEndpoint.as_view(), name="verify"),
+    path("resend-verification/", ResendVerificationEndpoint.as_view(), name="send_verification"),
     path("get-access-token/", TokenRefreshView.as_view(), name="get-access-token"),
 ]
