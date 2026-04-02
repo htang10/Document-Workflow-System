@@ -1,7 +1,5 @@
 from rest_framework import serializers
 from rest_framework.authentication import authenticate
-from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework_simplejwt.exceptions import TokenError
 
 from authentication.models import User
 
@@ -25,14 +23,14 @@ class SignUpSerializer(serializers.ModelSerializer):
             }
         }
 
-    def validate_email(self, value):
-        email = value.lower().strip()
+    def validate(self, data):
+        email = data["email"].lower().strip()
         existing_user = User.objects.filter(email=email).exists()
 
         if existing_user:
-            raise serializers.ValidationError("User with this email already exists.")
+            raise serializers.ValidationError({"error": "User with this email already exists."})
 
-        return email
+        return data
 
     def create(self, validated_data):
         password = validated_data.pop("password")
@@ -68,7 +66,7 @@ class LoginSerializer(serializers.Serializer):
 
         user_obj = User.objects.get(email=normalized_email)
         if not user_obj.email_verified_at:
-            raise serializers.ValidationError({"error": "Email not verified yet."})
+            raise serializers.ValidationError({"error": "Email not verified."})
 
         data["user"] = user
         return data
@@ -82,14 +80,6 @@ class LogoutSerializer(serializers.Serializer):
     """
     refresh = serializers.CharField()
 
-    def validate(self, data):
-        try:
-            token = RefreshToken(data["refresh"])
-            token.blacklist()
-        except TokenError:
-            raise serializers.ValidationError("Token is invalid or already blacklisted.")
-        return data
-
 
 class ResendVerificationSerializer(serializers.Serializer):
     """
@@ -99,11 +89,15 @@ class ResendVerificationSerializer(serializers.Serializer):
     """
     email = serializers.EmailField(max_length=255)
 
-    def validate_email(self, value):
-        email = value.lower().strip()
-        existing_user = User.objects.filter(email=email).exists()
+    def validate(self, data):
+        email = data["email"].lower().strip()
 
-        if not existing_user:
-            raise serializers.ValidationError("User with this email does not exist.")
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            raise serializers.ValidationError({"error": "User with this email does not exist."})
 
-        return email
+        if user.email_verified_at:
+            raise serializers.ValidationError({"error": "Email already verified."})
+
+        return {"user": user}
