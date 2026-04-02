@@ -7,6 +7,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('authentication', '0001_initial'),
+        ('token_blacklist', '0013_alter_blacklistedtoken_options_and_more')
     ]
 
     operations = [
@@ -32,5 +33,51 @@ class Migration(migrations.Migration):
                 REFERENCES users(id)
                 DEFERRABLE INITIALLY DEFERRED;
             """,
+        ),
+        migrations.RunSQL(
+            sql="""
+               ALTER TABLE token_blacklist_outstandingtoken
+               DROP CONSTRAINT token_blacklist_outstandingtoken_user_id_83bc629a_fk_users_id;
+
+               ALTER TABLE token_blacklist_outstandingtoken
+               ADD CONSTRAINT token_blacklist_outstandingtoken_user_id_83bc629a_fk_users_id
+               FOREIGN KEY (user_id)
+               REFERENCES users(id)
+               ON DELETE CASCADE
+               DEFERRABLE INITIALLY DEFERRED;
+           """,
+            reverse_sql="""
+               ALTER TABLE token_blacklist_outstandingtoken
+               DROP CONSTRAINT token_blacklist_outstandingtoken_user_id_83bc629a_fk_users_id;
+
+               ALTER TABLE token_blacklist_outstandingtoken
+               ADD CONSTRAINT token_blacklist_outstandingtoken_user_id_83bc629a_fk_users_id
+               FOREIGN KEY (user_id)
+               REFERENCES users(id)
+               DEFERRABLE INITIALLY DEFERRED;
+           """,
+        ),
+        migrations.RunSQL(
+            sql="""
+            ALTER TABLE token_blacklist_blacklistedtoken
+            DROP CONSTRAINT token_blacklist_blacklistedtoken_token_id_3cc7fe56_fk;
+
+            ALTER TABLE token_blacklist_blacklistedtoken
+            ADD CONSTRAINT token_blacklist_blacklistedtoken_token_id_3cc7fe56_fk
+            FOREIGN KEY (token_id)
+            REFERENCES token_blacklist_outstandingtoken(id)
+            ON DELETE CASCADE
+            DEFERRABLE INITIALLY DEFERRED;
+        """,
+            reverse_sql="""
+            ALTER TABLE token_blacklist_blacklistedtoken
+            DROP CONSTRAINT token_blacklist_blacklistedtoken_token_id_3cc7fe56_fk;
+
+            ALTER TABLE token_blacklist_blacklistedtoken
+            ADD CONSTRAINT token_blacklist_blacklistedtoken_token_id_3cc7fe56_fk
+            FOREIGN KEY (token_id)
+            REFERENCES token_blacklist_outstandingtoken(id)
+            DEFERRABLE INITIALLY DEFERRED;
+        """,
         )
     ]
